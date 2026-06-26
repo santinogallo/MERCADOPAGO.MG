@@ -202,7 +202,7 @@ async function loadData(){
       const det=(r[iDet]||'').replace(/"/g,'').trim();
       const fecha=(r[iF]||'').replace(/"/g,'').trim();
       const ok=(r[iOk]||'').replace(/"/g,'').trim();
-      const ms=(r[iM]||'').replace(/"/g,'').replace(/\$/g,'').trim().replace(/\./g,'').replace(',','.');
+      const ms=(r[iM]||'').replace(/"/g,'').replace(/\$/g,'').replace(/,/g,'').trim();
       const monto=parseFloat(ms);
       if(!dest||isNaN(monto)||monto===0)continue;
       const tipoRaw=iTipo>=0?(r[iTipo]||'').replace(/"/g,'').trim().toUpperCase():'';
