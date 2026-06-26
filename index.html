@@ -182,7 +182,12 @@ async function loadData(){
     const text=await res.text();
     const rows=text.trim().split('\n');
     const sep=rows[0].includes(';')?';':',';
-    const headers=rows[0].split(sep).map(h=>h.trim().toUpperCase().replace(/"/g,''));
+    // Find the real header row (the one that contains FECHA)
+    let headerIdx=0;
+    for(let i=0;i<Math.min(rows.length,5);i++){
+      if(rows[i].toUpperCase().includes('FECHA')){headerIdx=i;break;}
+    }
+    const headers=rows[headerIdx].split(sep).map(h=>h.trim().toUpperCase().replace(/"/g,''));
     const iF=headers.findIndex(h=>h.includes('FECHA'));
     const iD=headers.findIndex(h=>h.includes('DESTINATARIO'));
     const iDet=headers.findIndex(h=>h.includes('DETALLE'));
@@ -190,7 +195,7 @@ async function loadData(){
     const iM=headers.findIndex(h=>h.includes('MONTO'));
     const iTipo=headers.findIndex(h=>h.includes('TIPO'));
     allData=[];
-    for(let i=1;i<rows.length;i++){
+    for(let i=headerIdx+1;i<rows.length;i++){
       const r=rows[i].split(sep);
       if(!r||r.length<3)continue;
       const dest=(r[iD]||'').replace(/"/g,'').trim();
