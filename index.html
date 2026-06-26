@@ -181,7 +181,8 @@ async function loadData(){
     const res=await fetch(SHEET_URL+'&cb='+Date.now());
     const text=await res.text();
     const rows=text.trim().split('\n');
-    const headers=rows[0].split(',').map(h=>h.trim().toUpperCase().replace(/"/g,''));
+    const sep=rows[0].includes(';')?';':',';
+    const headers=rows[0].split(sep).map(h=>h.trim().toUpperCase().replace(/"/g,''));
     const iF=headers.findIndex(h=>h.includes('FECHA'));
     const iD=headers.findIndex(h=>h.includes('DESTINATARIO'));
     const iDet=headers.findIndex(h=>h.includes('DETALLE'));
@@ -190,13 +191,13 @@ async function loadData(){
     const iTipo=headers.findIndex(h=>h.includes('TIPO'));
     allData=[];
     for(let i=1;i<rows.length;i++){
-      const r=rows[i].split(',');
+      const r=rows[i].split(sep);
       if(!r||r.length<3)continue;
       const dest=(r[iD]||'').replace(/"/g,'').trim();
       const det=(r[iDet]||'').replace(/"/g,'').trim();
       const fecha=(r[iF]||'').replace(/"/g,'').trim();
       const ok=(r[iOk]||'').replace(/"/g,'').trim();
-      const ms=(r[iM]||'').replace(/"/g,'').replace(/\./g,'').replace(',','.').trim();
+      const ms=(r[iM]||'').replace(/"/g,'').replace(/\$/g,'').trim().replace(/\./g,'').replace(',','.');
       const monto=parseFloat(ms);
       if(!dest||isNaN(monto)||monto===0)continue;
       const tipoRaw=iTipo>=0?(r[iTipo]||'').replace(/"/g,'').trim().toUpperCase():'';
